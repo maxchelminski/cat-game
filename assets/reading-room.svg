@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none" shape-rendering="crispEdges">
+  <defs>
+    <pattern id="wall" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path fill="#3b3337" d="M0 0h32v32H0z"/>
+      <path fill="#443a3e" opacity=".5" d="M0 0h2v32H0zM16 0h2v32h-2z"/>
+      <path fill="#665044" opacity=".14" d="M8 8h2v2H8zM24 24h2v2h-2z"/>
+    </pattern>
+    <pattern id="floor" width="128" height="32" patternUnits="userSpaceOnUse">
+      <path fill="#60433c" d="M0 0h128v32H0z"/>
+      <path fill="#715047" d="M0 2h128v2H0z"/>
+      <path fill="#4b3534" d="M0 0h128v2H0zM0 30h128v2H0zM0 0h2v32H0z"/>
+      <path fill="#845e4c" opacity=".38" d="M16 12h42v2H16zM84 22h28v2H84zM66 7h20v2H66z"/>
+      <path fill="#4b3534" opacity=".6" d="M42 23h20v2H42zM92 12h14v2H92z"/>
+    </pattern>
+  </defs>
+  <!-- A quiet room after the last chapter. Every form follows a 2px grid. -->
+  <path fill="#2b2730" d="M0 0h640v360H0z"/>
+  <path fill="url(#wall)" d="M0 0h640v244H0z"/>
+  <path fill="#29272e" d="M0 0h640v8H0zM0 0h12v244H0zM628 0h12v244h-12z"/>
+  <path fill="#75604f" d="M12 10h616v4H12z"/>
+  <path fill="#28242b" d="M12 14h616v8H12z"/>
+  <path fill="#4b3b3b" d="M12 188h616v52H12z"/>
+  <path fill="#62483f" d="M12 188h616v6H12z"/>
+  <path fill="#30292f" d="M12 194h616v4H12z"/>
+  <path fill="#3b3034" d="M36 198h4v40h-4zM110 198h4v40h-4zM184 198h4v40h-4zM258 198h4v40h-4zM332 198h4v40h-4zM406 198h4v40h-4zM480 198h4v40h-4zM554 198h4v40h-4z"/>
+  <path fill="#6f5145" d="M12 236h616v6H12z"/>
+  <path fill="#28242b" d="M0 242h640v8H0z"/>
+  <path fill="url(#floor)" d="M0 250h640v110H0z"/>
+  <path fill="#815a49" opacity=".4" d="M0 252h640v4H0zM0 286h640v2H0zM0 318h640v2H0z"/>
+  <path fill="#443033" d="M64 250h2v36h-2zM320 250h2v36h-2zM574 250h2v36h-2zM190 288h2v30h-2zM448 288h2v30h-2zM64 320h2v40h-2zM320 320h2v40h-2zM576 320h2v40h-2z"/>
+  <path fill="#382b31" opacity=".32" d="M0 344h640v16H0zM0 250h16v94H0zM624 250h16v94h-16z"/>
+  <!-- Deep, wooden window with pale moonlight and layered night hills. -->
+  <path fill="#27242c" d="M44 26h278v164H44z"/>
+  <path fill="#765749" d="M48 28h270v156H48z"/>
+  <path fill="#b48c61" d="M52 32h262v4H52z"/>
+  <path fill="#332b32" d="M58 38h250v136H58z"/>
+  <path fill="#303044" d="M64 44h238v124H64z"/>
+  <path fill="#35384a" d="M64 92h238v76H64z"/>
+  <path fill="#414153" d="M64 116h238v52H64z"/>
+  <path fill="#98917e" opacity=".08" d="M198 54h52v2h8v8h4v24h-4v8h-8v4h-52v-4h-8v-8h-4V64h4v-8h8z"/>
+  <path fill="#eee0aa" d="M214 52h18v4h8v8h4v18h-4v8h-8v4h-18v-4h-8v-8h-4V64h4v-8h8z"/>
+  <path fill="#d3c294" d="M206 76h4v10h10v4h12v4h-18v-4h-8zM230 58h6v8h-6zM216 66h8v4h-8z"/>
+  <path fill="#d7d1b4" d="M92 60h2v2h-2zM122 84h2v2h-2zM170 56h2v2h-2zM274 72h2v2h-2zM250 110h2v2h-2zM192 112h2v2h-2zM80 108h2v2h-2z"/>
+  <path fill="#aab3ae" d="M144 66h2v6h-2zM142 68h6v2h-6zM284 94h2v6h-2zM282 96h6v2h-6z"/>
+  <path fill="#626074" opacity=".8" d="M74 82h12v-4h26v4h14v4h10v4H74zM224 100h28v-4h28v4h14v6h-70z"/>
+  <path fill="#777084" opacity=".45" d="M86 84h26v2H86zM238 100h40v2h-40z"/>
+  <path fill="#495250" d="M64 138h12v-6h16v-6h20v-6h28v4h18v8h22v8h20v-4h18v-8h24v-6h22v8h18v8h20v30H64z"/>
+  <path fill="#343e43" d="M64 154h20v-6h20v-8h22v-4h24v8h18v6h32v-4h22v-6h18v4h18v8h22v6h22v10H64z"/>
+  <path fill="#24333a" d="M64 164h34v-4h24v4h36v-6h28v2h32v4h34v-4h24v4h26v4H64z"/>
+  <path fill="#a29d8b" opacity=".12" d="M64 46h6v120h-6zM70 46h44v4H70z"/>
+  <path fill="#302a31" d="M178 38h12v136h-12zM58 110h250v10H58z"/>
+  <path fill="#826451" d="M180 38h4v136h-4zM58 112h250v4H58z"/>
+  <path fill="#a18461" d="M176 170h14v4h-14z"/>
+  <path fill="#967154" d="M40 180h290v8H40z"/>
+  <path fill="#60473e" d="M46 188h278v6H46z"/>
+  <path fill="#372c31" d="M52 194h266v4H52z"/>
+  <!-- Soft, folded curtains hug the edges of the window. -->
+  <path fill="#30252f" d="M28 22h42v168H28zM300 22h42v168h-42z"/>
+  <path fill="#77535b" d="M32 28h34v98h-4v20h-6v16h-6v24H32zM304 28h34v158h-18v-24h-6v-16h-6v-20h-4z"/>
+  <path fill="#63434e" d="M36 28h8v134h-4v24h-8V28zM56 28h6v112h-6zM310 28h8v112h-8zM326 28h8v158h-8z"/>
+  <path fill="#976b6b" d="M46 30h4v124h-4zM320 30h4v124h-4z"/>
+  <path fill="#bc925a" d="M30 150h24v6H30zM318 150h22v6h-22z"/>
+  <path fill="#8b664a" d="M28 24h318v4H28z"/>
+  <path fill="#c59b64" d="M24 22h8v8h-8zM342 22h8v8h-8z"/>
+  <!-- A pendant lamp casts a restrained pool of amber light. -->
+  <path fill="#ddb878" opacity=".04" d="M402 92h72l78 152H328z"/>
+  <path fill="#ddb878" opacity=".035" d="M414 98h48l50 146H366z"/>
+  <path fill="#27252c" d="M436 0h4v64h-4z"/>
+  <path fill="#977249" d="M436 4h2v60h-2z"/>
+  <path fill="#29262b" d="M426 62h24v8h12v12h12v14h-72V82h12V70h12z"/>
+  <path fill="#8d7758" d="M428 64h20v8h12v12h10v8h-64v-8h10V72h12z"/>
+  <path fill="#b89a65" d="M428 68h6v8h-12v10h-12v4h-4v-6h10V72h12z"/>
+  <path fill="#6c5f4c" d="M446 72h12v12h12v6h-14v-8h-10z"/>
+  <path fill="#e9c684" d="M402 92h72v4h-72z"/>
+  <path fill="#f5d997" d="M424 98h28v4h-28z"/>
+  <path fill="#d6ab6c" opacity=".25" d="M420 102h36v4h-36z"/>
+  <!-- A few treasured books and pottery on wall-mounted ledges. -->
+  <path fill="#28252d" d="M510 52h106v80H510z"/>
+  <path fill="#5a403a" d="M514 56h98v72h-98z"/>
+  <path fill="#443437" d="M518 60h90v58h-90z"/>
+  <path fill="#82604b" d="M508 122h110v8H508z"/>
+  <path fill="#a88059" d="M508 122h110v2H508z"/>
+  <path fill="#30282d" d="M514 130h98v6h-98z"/>
+  <path fill="#878669" d="M526 80h10v40h-10z"/>
+  <path fill="#b7a078" d="M526 84h10v4h-10zM528 108h6v2h-6z"/>
+  <path fill="#a27067" d="M538 88h12v32h-12z"/>
+  <path fill="#d4a787" d="M540 92h8v2h-8zM540 114h8v2h-8z"/>
+  <path fill="#64566c" d="m550 82 10-2 8 38-10 2z"/>
+  <path fill="#b3a184" d="m552 88 10-2 1 4-10 2z"/>
+  <path fill="#29292e" d="M578 98h22v20h-4v4h-14v-4h-4z"/>
+  <path fill="#b58d71" d="M580 100h18v16h-4v4h-10v-4h-4z"/>
+  <path fill="#d1af86" d="M582 102h4v12h-4z"/>
+  <path fill="#565d46" d="M588 80h4v20h-4zM580 82h8v8h-4v-4h-4zM592 74h8v8h-4v4h-4z"/>
+  <path fill="#889367" d="M576 80h8v4h4v4h-8v-4h-4zM594 72h8v6h-4v4h-6v-6h2z"/>
+  <!-- A small print, brass pins, and hanging stars make the room lived-in. -->
+  <path fill="#29262d" d="M544 156h58v68h-58z"/>
+  <path fill="#88684f" d="M548 158h50v62h-50z"/>
+  <path fill="#b9a48b" d="M552 162h42v54h-42z"/>
+  <path fill="#bdaa87" d="M556 166h34v46h-34z"/>
+  <path fill="#60694f" d="M560 196h4v-10h4v-8h6v8h4v10h4v8h-22z"/>
+  <path fill="#8c815b" d="M576 196h4v-10h4v10h4v8h-12z"/>
+  <path fill="#78664d" d="M556 204h34v4h-34zM568 204h4v8h-4z"/>
+  <path fill="#eee0b4" d="M580 170h6v6h-6z"/>
+  <path fill="#99835e" d="M482 26h2v26h-2zM466 26h32v2h-32zM466 28h2v10h-2zM496 28h2v14h-2z"/>
+  <path fill="#c9ac75" d="M480 52h6v4h4v4h-4v4h-6v-4h-4v-4h4zM466 38h2v4h4v2h-4v4h-2v-4h-4v-2h4zM494 42h6v4h-6z"/>
+  <!-- Fern and a tea cup: small details at the margins keep the center open. -->
+  <path fill="#372b2f" opacity=".65" d="M36 268h66v10H36z"/>
+  <path fill="#3c3033" d="M48 226h42v10h-4v30h-8v6H60v-6h-8v-30h-4z"/>
+  <path fill="#9f6b56" d="M52 232h34v8h-4v24H60v-24h-8z"/>
+  <path fill="#c28968" d="M54 234h28v4H54zM60 242h4v18h-4z"/>
+  <path fill="#714d42" d="M74 240h8v24h-8z"/>
+  <path fill="#43533d" d="M68 196h4v38h-4zM60 208h8v8h-8zM74 204h8v8h-8z"/>
+  <path fill="#75865a" d="M64 184h8v6h4v16h-8v-10h-4zM48 196h12v4h8v10h-8v-6H48zM76 190h16v6h-6v6H76zM42 210h14v4h10v8H54v-6H42zM74 214h10v-6h12v6h-6v6H74z"/>
+  <path fill="#9aa371" d="M66 186h4v8h-4zM50 198h10v4H50zM80 192h10v2H80zM46 212h10v2H46zM82 210h10v2H82z"/>
+  <!-- A woven resting mat is part of the base room. -->
+  <path fill="#352c30" opacity=".48" d="M230 286h190v4h16v28h-16v6H230v-6h-16v-28h16z"/>
+  <path fill="#6c6e4d" d="M232 280h184v6h16v24h-16v6H232v-6h-16v-24h16z"/>
+  <path fill="#99966b" d="M234 282h180v4H234zM222 286h10v4h-10zM218 290h4v16h-4zM222 306h10v4h-10zM234 310h180v4H234zM416 286h10v4h-10zM428 290h2v16h-2zM416 306h10v4h-10z"/>
+  <path fill="#4e5640" d="M238 290h170v2H238zM228 298h190v2H228zM238 306h170v2H238z"/>
+  <path fill="#929063" opacity=".5" d="M240 294h2v10h-2zM258 290h2v18h-2zM276 290h2v18h-2zM294 290h2v18h-2zM312 290h2v18h-2zM330 290h2v18h-2zM348 290h2v18h-2zM366 290h2v18h-2zM384 290h2v18h-2zM402 294h2v10h-2z"/>
+  <path fill="#c7a078" opacity=".2" d="M482 296h56v2h-56zM102 330h44v2h-44zM370 344h22v2h-22z"/>
+  <path fill="#dab981" opacity=".55" d="M380 148h2v6h-2zM378 150h6v2h-6zM490 202h2v2h-2zM130 214h2v2h-2zM464 274h2v2h-2z"/>
+</svg>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Companion QA · Saved-state scenarios</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#17150f;color:#eee9dc;font:14px/1.5 system-ui,sans-serif}main{max-width:1180px;margin:0 auto;padding:28px}a{color:#c5d391}h1{font-size:24px;margin:0 0 6px}h2{font-size:15px;margin:0 0 12px}p{margin:8px 0;color:#bcb49f}.qa-panel{margin:0 0 32px;padding:22px;background:#262319;border:1px solid #524936;border-radius:12px}.qa-header{display:flex;justify-content:space-between;gap:20px;align-items:center}.qa-header a{white-space:nowrap}.fixture-buttons,.reward-buttons{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}button{font:inherit;color:#e8edcf;background:#39402b;border:1px solid #687549;border-radius:6px;padding:9px 12px;cursor:pointer}button:hover{background:#485136}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible{outline:2px solid #d3df9f;outline-offset:3px}.secondary{background:#302c22;border-color:#62553d;color:#e6d5b0}.warning{color:#e4c1a4}.fixture-status{display:inline-block;padding:4px 8px;border:1px solid #62553d;border-radius:4px;font-size:12px;color:#c5d391}details{margin-top:16px;border-top:1px solid #48412f;padding-top:12px}summary{cursor:pointer;color:#ddd6c2}pre{margin:12px 0 0;background:#161610;border-radius:6px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;color:#d3deba;font:12px/1.5 ui-monospace,monospace}hr{height:1px;border:0;background:#48412f;margin:18px 0}.small{font-size:12px}code{font:12px ui-monospace,monospace;color:#d4dba9}schale-companion{display:block}@media(max-width:650px){main{padding:16px}.qa-panel{padding:16px}.qa-header{align-items:start;flex-direction:column;gap:8px}.fixture-buttons button{flex:1 1 145px}.reward-buttons button{flex:1 1 200px}}
+  </style>
+</head>
+<body>
+  <main>
+    <section class="qa-panel" aria-labelledby="qa-title">
+      <div class="qa-header"><h1 id="qa-title">Saved-state scenarios</h1><a href="./embed.html">Open navbar dock test →</a></div>
+      <p class="warning">QA fixtures replace this browser’s local companion save.</p>
+      <p class="small">Each fixture reloads this page. Close any other companion tabs while testing to keep their saves from updating these fixtures.</p>
+      <span class="fixture-status" id="fixture-status">Current local save</span>
+      <div class="fixture-buttons" aria-label="Install a saved-state fixture">
+        <button type="button" data-fixture="fresh">Fresh visitor</button>
+        <button type="button" data-fixture="away7">Away 7 days</button>
+        <button type="button" data-fixture="away90">Away 90 days</button>
+        <button type="button" data-fixture="errand">Errand ready</button>
+        <button type="button" data-fixture="eight">Eight weekly visits</button>
+        <button type="button" data-fixture="sleepy">Broke and sleepy</button>
+        <button type="button" data-fixture="rich">Rich collector</button>
+      </div>
+      <details>
+        <summary>Expected fixture behavior</summary>
+        <p class="small">Fresh: 60 coins and the first weekly check-in. Away: a welcome dialog, +15 coins, recharged energy, and stats no lower than 20. Errand: 35 coins and a manga stack on return. Eight visits: all three weekly keepsakes unlock. Broke: paid actions are unavailable, but free headpats still work. Rich: 500 coins to try the shop.</p>
+      </details>
+      <hr>
+      <h2>Chapter-completion integration</h2>
+      <p class="small">A repeated chapter should reward only once. The large reward should stop at the 100-coins daily / 300-coins weekly limit. Reset to Fresh visitor between independent checks.</p>
+      <div class="reward-buttons">
+        <button type="button" class="secondary" id="duplicate-reward">Award the same chapter twice</button>
+        <button type="button" class="secondary" id="cap-reward">Request 1,000 reading coins</button>
+      </div>
+      <pre id="reward-output" role="status" aria-live="polite">Reward results will appear here.</pre>
+    </section>
+    <schale-companion expanded></schale-companion>
+  </main>
+  <script type="module">
+    import { createState, STORAGE_KEY, DAY, HOUR } from '../src/engine.js';
+
+    const pendingKey = 'schale-companion:qa-pending-fixture';
+    const labelKey = 'schale-companion:qa-fixture-label';
+    const output = document.querySelector('#reward-output');
+    const labels = {
+      fresh: 'Fresh visitor', away7: 'Away 7 days', away90: 'Away 90 days',
+      errand: 'Errand ready', eight: 'Eight weekly visits', sleepy: 'Broke and sleepy', rich: 'Rich collector',
+    };
+
+    // A production pagehide handler stamps lastSeen. Restore the fixture before
+    // loading that module, so an intentional absence survives the QA reload.
+    try {
+      const pending = sessionStorage.getItem(pendingKey);
+      if (pending) {
+        localStorage.setItem(STORAGE_KEY, pending);
+        sessionStorage.removeItem(pendingKey);
+      }
+      document.querySelector('#fixture-status').textContent = sessionStorage.getItem(labelKey) || 'Current local save';
+    } catch (error) {
+      output.textContent = `Fixture storage unavailable: ${error.message}`;
+    }
+
+    await import('../src/companion.js');
+    await customElements.whenDefined('schale-companion');
+
+    function makeFixture(kind) {
+      const now = Date.now();
+      const state = createState(now);
+      if (kind === 'away7' || kind === 'away90') {
+        const days = kind === 'away7' ? 7 : 90;
+        state.createdAt = now - (days + 7) * DAY;
+        state.lastUpdated = now - days * DAY;
+        state.lastSeen = now - days * DAY;
+        state.energy = 15;
+      } else if (kind === 'errand') {
+        state.createdAt = now - 7 * DAY;
+        state.lastSeen = now - 4 * HOUR - 60_000;
+        state.energy = 65;
+        state.errand = { kind: 'bookshop', startedAt: now - 4 * HOUR - 60_000, endsAt: now - 60_000 };
+      } else if (kind === 'eight') {
+        const monday = new Date(now);
+        monday.setUTCHours(0, 0, 0, 0);
+        monday.setUTCDate(monday.getUTCDate() - (monday.getUTCDay() + 6) % 7);
+        const weeks = Array.from({ length: 8 }, (_, index) => new Date(+monday - (7 - index) * 7 * DAY).toISOString().slice(0, 10));
+        state.createdAt = Date.parse(`${weeks[0]}T00:00:00Z`);
+        state.attendance = { weeks, streak: 8, best: 8, total: 8, lastWeek: weeks.at(-1) };
+        // Keep owned empty: normalization and session check-in should award gifts.
+      } else if (kind === 'sleepy') {
+        Object.assign(state, { hunger: 20, happiness: 20, energy: 0, coins: 0 });
+      } else if (kind === 'rich') {
+        state.coins = 500;
+      }
+      return state;
+    }
+
+    document.querySelectorAll('[data-fixture]').forEach(button => {
+      button.addEventListener('click', () => {
+        try {
+          const kind = button.dataset.fixture;
+          const json = JSON.stringify(makeFixture(kind));
+          sessionStorage.setItem(pendingKey, json);
+          sessionStorage.setItem(labelKey, labels[kind]);
+          localStorage.setItem(STORAGE_KEY, json);
+          location.reload();
+        } catch (error) {
+          output.textContent = `Could not install fixture: ${error.message}`;
+        }
+      });
+    });
+
+    async function runRewardCheck(button, check) {
+      button.disabled = true;
+      try { output.textContent = JSON.stringify(await check(), null, 2); }
+      catch (error) { output.textContent = `Reward hook error: ${error.message}`; }
+      finally { button.disabled = false; }
+    }
+
+    document.querySelector('#duplicate-reward').addEventListener('click', event => runRewardCheck(event.currentTarget, async () => {
+      const chapter = { chapterId: 'qa-same-chapter', reason: 'QA duplicate chapter' };
+      const first = await window.rewardPetCoins(10, chapter);
+      const second = await window.rewardPetCoins(10, chapter);
+      return { check: 'Same chapter twice', first, second };
+    }));
+
+    document.querySelector('#cap-reward').addEventListener('click', event => runRewardCheck(event.currentTarget, async () => {
+      const result = await window.rewardPetCoins(1000, { chapterId: 'qa-cap-chapter', reason: 'QA reading cap' });
+      return { check: 'Request 1,000 coins', result };
+    }));
+  </script>
+</body>
+</html>

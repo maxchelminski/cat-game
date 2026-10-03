@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17150f">
+  <meta name="description" content="A little reading, a little company. Your cozy Schale Scans reading companion.">
+  <title>Your companion · Schale Scans</title>
+  <link rel="icon" href="./assets/sprites/kemo-neutral.png">
+  <link rel="stylesheet" href="./demo.css">
+  <script type="module" src="./src/companion.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="https://www.schalescans.com/" aria-label="Schale Scans home"><img src="./assets/sprites/kemo-neutral.png" alt="" width="40" height="45"><span>schale<span class="brand-accent">scans</span><small>STORIES WORTH STAYING FOR</small></span></a>
+    <nav aria-label="Main navigation"><a href="https://www.schalescans.com/manga">Browse manga</a><a href="https://www.schalescans.com/announcements">Latest updates</a><a href="https://www.schalescans.com/community">Community</a><a class="selected" href="#companion" aria-current="page"><span class="nav-star">✧</span> My companion</a></nav>
+    <a class="reader-link" href="https://www.schalescans.com/manga" aria-label="Back to reading">Back to reading <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="companion">
+    <schale-companion expanded></schale-companion>
+    <section class="demo-tools" aria-label="Integration preview">
+      <span>READER PREVIEW</span><p>Try the chapter-completion reward.</p><button id="chapter-demo">Finish a demo chapter <span>+10 coins</span></button>
+    </section>
+  </main>
+  <footer class="site-footer"><span>Made for the moments between chapters.</span><span>Schale Scans <span class="footer-dot">·</span> A little company, at your pace.</span></footer>
+  <script type="module">
+    let chapter = 0;
+    document.querySelector('#chapter-demo').addEventListener('click', async () => {
+      await customElements.whenDefined('schale-companion');
+      const result = await window.rewardPetCoins(10, { chapterId: `demo-${Date.now()}-${++chapter}`, reason: 'Demo chapter finished' });
+      document.querySelector('#chapter-demo').setAttribute('aria-label', result.message);
+    });
+  </script>
+</body>
+</html>

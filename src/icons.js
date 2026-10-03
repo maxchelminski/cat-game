@@ -1,0 +1,26 @@
+const paths = {
+ home:'<path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/>',
+ bag:'<path d="M5 7h14l2 14H3Z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/>',
+ book:'<path d="M12 5v16M3 3c4 0 7 1 9 3 2-2 5-3 9-3v15c-4 0-7 1-9 3-2-2-5-3-9-3Z"/>',
+ heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',
+ leaf:'<path d="M20 3c-9-1-17 3-16 10a7 7 0 0 0 7 7c7-1 9-9 9-17Z"/><path d="m4 21 11-12"/>',
+ energy:'<path d="m13 2-9 12h7l-1 8 10-12h-7Z"/>',
+ coin:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10m-3-8h6m-6 6h6"/>',
+ star:'<path d="m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/>',
+ spark:'<path d="m12 2 2.8 7.2L22 12l-7.2 2.8L12 22l-2.8-7.2L2 12l7.2-2.8Z"/>',
+ check:'<path d="m5 12 4 4L19 6"/>',
+ arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>',
+ close:'<path d="m6 6 12 12M6 18 18 6"/>',
+ minimize:'<path d="M5 16h14M15 4v5h5"/>',
+ moon:'<path d="M21 13a9 9 0 0 1-10-10 9 9 0 1 0 10 10Z"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/>',
+ calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 11h18m-14 4h3m4 0h3"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',
+ gift:'<rect x="3" y="8" width="18" height="4"/><path d="M5 12v9h14v-9M12 8v13M12 8C2 8 7-3 12 8c5-11 10 0 0 0Z"/>',
+ settings:'<path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/>',
+ bowl:'<path d="M3 11h18a9 9 0 0 1-18 0ZM8 21h8M8 7V3m4 4V2m4 5V3"/>',
+ compass:'<circle cx="12" cy="12" r="9"/><path d="m16 8-3 5-5 3 3-5Z"/>',
+ lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4"/>'
+};
+export function icon(name, size=20) { return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.spark}</svg>`; }

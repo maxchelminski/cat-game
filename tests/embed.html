@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Companion QA · Navbar dock</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#161611;color:#e8e4d8;font:14px/1.6 system-ui,sans-serif}header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 28px;border-bottom:1px solid #413f2e;background:#222219}.brand{font-weight:700;letter-spacing:-.5px;font-size:21px;color:#e8ead8}.brand span{color:#afbe75}main{max-width:820px;margin:0 auto;padding:70px 24px}h1{font-size:32px;line-height:1.25;letter-spacing:-1px;margin:8px 0 16px}h2{font-size:17px;margin:0 0 8px}p{color:#b5b59f}a{color:#c6d694}a:focus-visible{outline:2px solid #d3df9f;outline-offset:3px}.eyebrow{font-size:11px;letter-spacing:2px;color:#a5b36c}.instructions{padding:24px;margin:28px 0;border:1px solid #424730;border-radius:12px;background:#25281c}.instructions ol{padding-left:22px;color:#c9c9b4}.instructions li+li{margin-top:8px}.reading-placeholder{height:200px;border:1px dashed #474533;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:24px;color:#8e9575;text-align:center}.dock-container{width:225px;max-width:60vw;flex-shrink:0}schale-companion{display:block}code{color:#d2dbb1;font:12px ui-monospace,monospace}@media(max-width:520px){header{padding:12px 16px;gap:12px}.brand{font-size:17px}.dock-container{width:207px;max-width:62vw}main{padding:36px 18px}h1{font-size:27px}.instructions{padding:18px}}
+  </style>
+  <script type="module" src="../src/companion.js"></script>
+</head>
+<body>
+  <header>
+    <span class="brand">schale<span>scans</span></span>
+    <div class="dock-container"><schale-companion dock-position="inline"></schale-companion></div>
+  </header>
+  <main>
+    <span class="eyebrow">COMPANION INTEGRATION QA</span>
+    <h1>A small friend in the navigation.</h1>
+    <p>This page embeds one default, minimized companion in a sample reader header. It shares the current local save with the expanded-room preview.</p>
+    <section class="instructions" aria-labelledby="checks-title">
+      <h2 id="checks-title">Dock and modal checks</h2>
+      <ol>
+        <li>Open the room using the companion button in the header.</li>
+        <li>Use the room tabs, open a treat dialog, and return to the room.</li>
+        <li>Close the room with its minimize button or <kbd>Escape</kbd>. Focus should return to the dock.</li>
+        <li>Resize the browser or use a mobile viewport. The room should stay usable and scroll within the modal.</li>
+      </ol>
+      <p>The component has <code>dock-position="inline"</code> and no <code>expanded</code> attribute.</p>
+    </section>
+    <div class="reading-placeholder">Sample reader content stays in place while the companion opens above it.</div>
+    <p><a href="./scenarios.html">← Saved-state scenarios</a> · <a href="../index.html">Open full preview</a></p>
+  </main>
+</body>
+</html>
