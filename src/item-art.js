@@ -308,6 +308,30 @@ function outfitArt(id) {
 
 const aliases = { 'manga-stack': 'manga', 'manga-stacks': 'manga', 'floor-rug': 'rug', 'round-glasses': 'glasses', 'festival-mask': 'mask', 'favorite-food': 'matcha', 'reading-break': 'stroll', 'moon-ribbon': 'ribbon', 'weekly-bookmark': 'bookmark' };
 
+/** These furnishings have a persistent on/off state instead of a simple wiggle. */
+export const LIGHT_DECOR_IDS = Object.freeze(['shrine-lantern', 'sakura-lantern', 'moon-lamp']);
+
+function furnishingArt(id, { active = true } = {}) {
+  let body = furnishings[id]();
+  if (!LIGHT_DECOR_IDS.includes(id)) return body;
+  if (active) {
+    const halo = id === 'shrine-lantern'
+      ? P('M29 31h52v7h8v24h-8v9H29v-9h-8V38h8z', '#dfc987')
+      : id === 'sakura-lantern'
+        ? P('M24 21h62v8h9v33h-9v10H24V62h-9V29h9z', '#f0c5b2')
+        : P('M32 6h52v9h11v31H84v15H32v-9H20V18h12z', '#c7cce8');
+    return `<g opacity=".11">${halo}</g>` + body;
+  }
+  const palette = id === 'shrine-lantern'
+    ? { '#c6a673': '#788174', '#ebd099': '#919581', '#eddfab': '#9ba38d', '#f9efd0': '#adb09a' }
+    : id === 'sakura-lantern'
+      ? { '#efd2b2': '#a3939c', '#f8e2c4': '#b6a6af', '#cfa38f': '#8a7e8d', '#d2a392': '#887e8b', '#bc819b': '#8c6e85', '#f3d7a6': '#b8a196' }
+      : { '#cdbb90': '#99959e', '#f1dfad': '#b8b2bb', '#8f96c5': '#656e89', '#d4dcef': '#929cad', '#a4a7ca': '#777e99', '#dfcca8': '#b0a399' };
+  for (const [lit, unlit] of Object.entries(palette)) body = body.replaceAll(lit, unlit);
+  if (id === 'moon-lamp') body = body.replace(sparkle(81, 11, '#d9c9a4'), '').replace(sparkle(12, 43, '#b6c0e0'), '');
+  return body;
+}
+
 /** Catalog thumbnails always use the same transparent 80 × 64 viewport. */
 export function itemArt(id) {
   id = aliases[id] || id;
@@ -315,16 +339,16 @@ export function itemArt(id) {
   if (String(id).startsWith('room-')) body = R(2, 7, 76, 48, ink) + roomArt(id).replace('<svg ', '<svg x="4" y="9" width="72" height="44" ') + R(6, 55, 68, 2, '#7c7260');
   else if (String(id).startsWith('outfit-')) body = outfitArt(id);
   else if (matPalettes[id]) body = at(3, 21, matArt(id), .41);
-  else if (furnishings[id]) body = `<svg x="7" y="3" width="66" height="60" viewBox="0 0 110 100">${furnishings[id]()}</svg>`;
+  else if (furnishings[id]) body = `<svg x="7" y="3" width="66" height="60" viewBox="0 0 110 100">${furnishingArt(id)}</svg>`;
   else body = (art[id] || art.bookmark)();
   return wrap(body);
 }
 
 /** Native furniture art; all rug variants have exactly the same footprint. */
-export function decorArt(id) {
+export function decorArt(id, { active = true } = {}) {
   id = aliases[id] || id;
   if (matPalettes[id]) return wrap(matArt(id), 180, 55);
-  if (furnishings[id]) return wrap(furnishings[id](), 110, 100);
+  if (furnishings[id]) return wrap(furnishingArt(id, { active }), 110, 100);
   return wrap('', 110, 100);
 }
 

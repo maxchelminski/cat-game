@@ -1,7 +1,7 @@
 import {CATALOG, SETS, ROOMS, ACHIEVEMENTS, getPass, getActiveSet, getCareBonus, getAchievementProgress, getErrandPreview} from './engine.js';
 import {icon} from './icons.js';
-import {itemArt, decorArt, badgeArt} from './item-art.js';
-import {roomArt, ROOM_LAYOUT} from './room-art.js';
+import {itemArt, decorArt, badgeArt, LIGHT_DECOR_IDS} from './item-art.js';
+import {roomArt, ROOM_LAYOUT, ROOM_INTERACTIONS} from './room-art.js';
 
 export const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const leaves = amount => `${icon('leaf',15)} <span>${amount}</span>`;
@@ -33,18 +33,25 @@ export function header(s,tab) {
 }
 export function scene(s,{preview=false}={}) {
   const room = roomInfo(s);
+  const toggles=s.roomToggles?.[room.id]||{},windowOpen=toggles.windowOpen!==false,lightOn=toggles.lightOn!==false;
+  const hotspots=preview?'':(ROOM_INTERACTIONS[room.id]||[]).map((p,index)=>{
+    const active=p.action==='window'?windowOpen:lightOn;
+    const label=p.action==='window'?`${active?'Close':'Open'} ${p.label}`:`Turn ${active?'off':'on'} ${p.label}`;
+    return `<button type="button" class="scene-tinker architecture-toggle" data-action="tinker" data-kind="${p.action}" data-id="${room.id}" data-hotspot="${index}" aria-label="${escape(label)}" title="${escape(label)}" aria-pressed="${active}" style="left:${p.x/640*100}%;top:${p.y/360*100}%;width:${p.width/640*100}%;height:${p.height/360*100}%"></button>`;
+  }).join('');
   const props = ['rug','left','right'].map(slot => {
     const id=s.equipped[slot] || (slot==='rug'?'default-mat':null);
     if(!id)return '';
-    const p=ROOM_LAYOUT[slot];
-    return `<div class="world-decor slot-${slot}" data-decor="${escape(id)}" style="left:${p.x/640*100}%;top:${p.y/360*100}%;width:${p.width/640*100}%;height:${p.height/360*100}%" aria-label="${escape(itemById(id)?.name || 'Starter mat')}">${decorArt(id)}</div>`;
+    const p=ROOM_LAYOUT[slot],name=itemById(id)?.name||'Starter mat',luminous=LIGHT_DECOR_IDS.includes(id),active=s.decorToggles?.[id]!==false;
+    const label=luminous?`Turn ${active?'off':'on'} ${name}`:`Tinker with ${name}`;
+    return `<div class="world-decor slot-${slot}" data-decor="${escape(id)}" style="left:${p.x/640*100}%;top:${p.y/360*100}%;width:${p.width/640*100}%;height:${p.height/360*100}%"><span class="decor-art">${decorArt(id,{active})}</span>${preview?'':`<button type="button" class="scene-tinker furniture-toggle" data-action="tinker" data-kind="decor" data-id="${escape(id)}" aria-label="${escape(label)}" title="${escape(label)}" ${luminous?`aria-pressed="${active}"`:''}></button>`}</div>`;
   }).join('');
   const trip=!preview&&s.errand;
-  return `<div class="scene ${preview?'scene-preview':''}" data-room="${escape(room.id)}"><div class="room-world"><div class="world-background" role="img" aria-label="${escape(room.name)} background">${roomArt(room.id)}</div>${props}
+  return `<div class="scene ${preview?'scene-preview':''}" data-room="${escape(room.id)}"><div class="room-world"><div class="world-background" role="img" aria-label="${escape(room.name)} background">${roomArt(room.id,{windowOpen,lightOn})}</div>${hotspots}${props}
     <div class="fox-position"><div class="fox-button" ${!preview?'data-action="pet"':''} ${trip?'hidden':''} aria-label="Kemomimi. Use the Headpat button for keyboard interaction.">${characterCanvas()}</div></div></div>
     ${!preview?`<div class="speech" ${trip?'hidden':''}><span>I saved a little space for you.</span></div>`:''}
     ${trip?`<div class="errand-scene">${itemArt(s.errand.kind)}<strong>A little adventure</strong><small data-countdown>Back in ${timeLeft(s.errand.endsAt)}</small><button class="text-button" data-action="errand">Check in / call her home ${icon('arrow',12)}</button></div>`:''}
-    ${!preview?`<span class="scene-hint">${trip?'HER NEXT STORY IS TAKING SHAPE':'A LITTLE HELLO IS ALWAYS WELCOME'}</span>`:''}</div>`;
+    ${!preview?`<span class="scene-hint">${trip?'HER NEXT STORY IS TAKING SHAPE':'TRY THE LIGHTS AND LITTLE THINGS'}</span>`:''}</div>`;
 }
 function stat(key,label,img,value) {
   return `<div class="stat ${key}"><div class="stat-label"><span>${icon(img,14)}${label}</span><span><b data-stat-number="${key}">${Math.round(value)}</b><em> / 100</em></span></div><div class="stat-track" role="progressbar" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(value)}"><div class="stat-fill" data-stat-bar="${key}" style="width:${value}%"></div></div></div>`;
@@ -96,7 +103,7 @@ export function passView(s) {
   return `<div class="pass-hero"><div><div class="eyebrow">OUR STORY · PERMANENT COLLECTION</div><h2>A bond that keeps growing.</h2><p>Fifty little milestones. One long story together.</p><span class="pass-promise">${icon('leaf',13)}No season deadline. Your progress always stays.</span></div><div class="pass-level"><strong>${pass.level}<span> / 50</span></strong><small>tiers unlocked</small></div></div>
     <div class="pass-progress-row"><div class="pass-progress"><div><strong>${pass.complete?'Every chapter, treasured':`On the way to tier ${pass.nextLevel}`}</strong><span>${pass.complete?'Collection complete':`${pass.current} / ${pass.needed} EXP`}</span></div><div class="stat-track"><div class="stat-fill" style="width:${pass.progress}%"></div></div></div><div class="pass-controls"><button class="icon-button" data-action="pass-scroll" data-value="-1" aria-label="Previous pass rewards">${icon('arrow',18)}</button><button class="icon-button" data-action="pass-scroll" data-value="1" aria-label="Next pass rewards">${icon('arrow',18)}</button></div></div>
     <div class="pass-track" tabindex="0" role="region" aria-label="Bond pass rewards; scroll horizontally">${pass.rewards.map(r=>`<article class="pass-card ${r.unlocked?'unlocked':''} ${r.claimed?'claimed':''} ${r.level===50?'final-reward':''}" data-tier="${r.level}"><div class="pass-card-top"><span>TIER ${String(r.level).padStart(2,'0')}</span>${icon(r.claimed?'check':r.unlocked?'gift':'lock',14)}</div><div class="pass-art">${rewardArt(r)}</div><h3>${escape(r.name)}</h3><p>${r.role?`Includes ${escape(r.role.name)} role eligibility`:r.itemIds?.length?'An exclusive little keepsake':r.badge?'A badge for your growing story':r.leaves?`${r.leaves} leaves to make your own memories`:'Our longest story deserves something special.'}</p>${r.level===50?'<small class="reserved-gift">Final gift reserved · to be revealed</small>':''}<button class="pass-claim" data-action="claim-pass" data-level="${r.level}" ${!r.unlocked||r.claimed?'disabled':''}>${r.claimed?'Collected':r.unlocked?'Claim reward':`${r.xpRequired.toLocaleString()} EXP`}</button></article>`).join('')}</div>
-    <div class="pass-info-grid"><div class="journal-note"><strong>The Moonlit Archive collection</strong><p>A room, its furniture, and an outfit found only on this pass. The full set gives +3% leaves; shop collections give +5%.</p></div><div class="journal-note"><strong>A badge every five tiers</strong><p>Every second badge also earns a Discord-role entitlement. Profile displays and Discord linking will connect later.</p></div></div>
+    <div class="pass-info-grid"><div class="journal-note"><strong>The Moonlit Archive collection</strong><p>A room, its furniture, and an outfit found only on this pass. The full set gives +8% leaves; shop collections give +5%.</p></div><div class="journal-note"><strong>A badge every five tiers</strong><p>Every second badge also earns a Discord-role entitlement. Profile displays and Discord linking will connect later.</p></div></div>
     <section class="badge-shelf"><div class="section-top"><div><h2>Your growing story</h2><p>Small enough for a profile. Meaningful enough to keep.</p></div></div><div class="badge-row">${pass.rewards.filter(r=>r.badge).map(r=>`<div class="badge-tile ${s.badges.includes(r.badge.id)?'earned':''}">${badgeArt(r.level/5)}<strong>${escape(r.badge.name)}</strong><small>Tier ${r.level}${r.role?' · role reward':''}</small></div>`).join('')}</div></section>`;
 }
 export function achievementsView(s) {

@@ -11,6 +11,10 @@ export const STORAGE_KEY = 'schale-idle-companion:v1';
 export const MILESTONES = Object.freeze([]);
 const ITEMS = new Map(CATALOG.map((item) => [item.id, item]));
 const DEFAULT_ITEMS = ['room-nook', 'outfit-base'];
+const LIGHT_DECOR_IDS = ['shrine-lantern', 'sakura-lantern', 'moon-lamp'];
+// The rare pass set and the well-fed bonus can stack to 13%. Preserve a valid
+// departure snapshot on reload, even if equipment or fullness has since changed.
+const MAX_ERRAND_BONUS = Math.max(...SETS.map((set) => set.bonus)) + 0.05;
 const ERRANDS = {
   stroll: { duration: 2 * HOUR, energy: 20, leaves: 20, xp: 15, name: 'Neighborhood stroll' },
   bookshop: { duration: 4 * HOUR, energy: 35, leaves: 35, xp: 15, name: 'Bookshop visit' },
@@ -56,6 +60,7 @@ export function createState(now = Date.now()) {
     version: 2, hunger: 100, happiness: 90, energy: 100, coins: 60, bondXp: 0,
     lastUpdated: now, lastSeen: now, createdAt: now, welcomeClaimedFor: null,
     owned: [...DEFAULT_ITEMS], equipped: { room: 'room-nook', outfit: 'outfit-base' },
+    roomToggles: {}, decorToggles: {},
     badges: [], moodBoostUntil: 0, errand: null, errandsCompleted: 0,
     attendance: { weeks: [], rewardedWeeks: [], streak: 0, best: 0, total: 0, lastWeek: null },
     reading: { day, week, dailyCoins: 0, weeklyCoins: 0, bonusRemainder: 0, chapterIds: [] },
@@ -91,6 +96,15 @@ export function normalizeState(raw, now = Date.now()) {
     const earlyBookmarkSlot = id === 'bookmark' && oldSlot === 'back';
     if (item?.slot && state.owned.includes(id) && (raw.version !== 2 || oldSlot === item.slot || earlyBookmarkSlot)) state.equipped[item.slot] = id;
   }
+  // Untouched windows and lights default to open/on in the room renderer. Keep
+  // only explicit booleans so older saves and malformed entries share that default.
+  const roomToggles = record(raw.roomToggles), decorToggles = record(raw.decorToggles);
+  for (const room of ROOMS) {
+    const saved = record(roomToggles[room.id]), toggles = {};
+    for (const key of ['windowOpen', 'lightOn']) if (typeof saved[key] === 'boolean') toggles[key] = saved[key];
+    if (Object.keys(toggles).length) state.roomToggles[room.id] = toggles;
+  }
+  for (const id of LIGHT_DECOR_IDS) if (typeof decorToggles[id] === 'boolean') state.decorToggles[id] = decorToggles[id];
   const validBadges = new Set(['bookshop-regular', ...PASS_REWARDS.filter((reward) => reward.badge).map((reward) => reward.badge.id)]);
   state.badges = unique(raw.badges).filter((id) => validBadges.has(id));
   state.errandsCompleted = whole(raw.errandsCompleted);
@@ -147,9 +161,9 @@ export function normalizeState(raw, now = Date.now()) {
     const endsAt = timestamp(savedErrand.endsAt, -1, now + config.duration);
     if (startedAt >= 0 && endsAt > startedAt && endsAt - startedAt === config.duration) {
       const savedReward = record(savedErrand.reward);
-      const bonus = clamp(finite(savedReward.bonus, 0), 0, 0.1);
+      const bonus = clamp(finite(savedReward.bonus, 0), 0, MAX_ERRAND_BONUS);
       state.errand = { kind: savedErrand.kind, startedAt, endsAt, reward: {
-        leaves: raw.version === 2 ? whole(savedReward.leaves, config.leaves, Math.floor(config.leaves * 1.1)) : config.leaves,
+        leaves: raw.version === 2 ? whole(savedReward.leaves, config.leaves, Math.floor(config.leaves * (1 + MAX_ERRAND_BONUS) + 1e-9)) : config.leaves,
         xp: whole(savedReward.xp, config.xp, config.xp), bonus,
         setId: SETS.some((set) => set.id === savedReward.setId) ? savedReward.setId : null,
       } };

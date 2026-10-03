@@ -48,7 +48,7 @@ export const SETS = Object.freeze([
   { id: 'shrine', name: 'Shrine sanctuary', roomId: 'shrine', itemIds: ['room-shrine', 'shrine-mat', 'shrine-lantern', 'shrine-offering'], bonus: 0.05, source: 'shop' },
   { id: 'tearoom', name: 'Tea for two', roomId: 'tearoom', itemIds: ['room-tearoom', 'tea-mat', 'tea-table', 'tea-bonsai'], bonus: 0.05, source: 'shop' },
   { id: 'sakura', name: 'Under the blossoms', roomId: 'sakura', itemIds: ['room-sakura', 'sakura-mat', 'sakura-lantern', 'sakura-bench'], bonus: 0.05, source: 'shop' },
-  { id: 'moon', name: 'A moonlit story', roomId: 'moon', itemIds: ['room-moon', 'moon-mat', 'moon-lamp', 'moon-books'], bonus: 0.03, source: 'pass' },
+  { id: 'moon', name: 'A moonlit story', roomId: 'moon', itemIds: ['room-moon', 'moon-mat', 'moon-lamp', 'moon-books'], bonus: 0.08, source: 'pass' },
 ]);
 
 // 10 gentle opening tiers total 1,000 XP. The next 40 cost 235, 245, ... 625:

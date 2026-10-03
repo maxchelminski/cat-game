@@ -263,7 +263,7 @@ test('all pass rewards claim once across serialization and cannot create XP or c
   assert.equal(state.coins, leaves); assert.equal(getPass(state).claimable.length, 0);
   assert.equal(getPass(state).complete, true);
   for (const id of SETS.find((set) => set.id === 'moon').itemIds) equipItem(state, id);
-  assert.equal(getActiveSet(state).bonus, 0.03);
+  assert.equal(getActiveSet(state).bonus, 0.08);
 });
 
 test('achievement claims use distinct chapters, qualified pets, full errands and collected shop sets', () => {
@@ -362,6 +362,32 @@ test('earlier v2 bookmark saves migrate to the visible right furniture slot', ()
   assert.ok(state.owned.includes('manga'));
 });
 
+test('room interactions migrate independently and preserve only known boolean toggles', () => {
+  const oldSave = fresh();
+  delete oldSave.roomToggles; delete oldSave.decorToggles;
+  const migrated = normalizeState(oldSave, MONDAY);
+  assert.deepEqual(migrated.roomToggles, {}); assert.deepEqual(migrated.decorToggles, {});
+  const state = normalizeState({ ...oldSave,
+    roomToggles: {
+      nook: { windowOpen: false, lightOn: true, other: false },
+      shrine: { windowOpen: 'false', lightOn: false },
+      tearoom: { windowOpen: true, lightOn: 0 },
+      sakura: null, moon: { windowOpen: false, lightOn: false },
+      invented: { windowOpen: false, lightOn: false },
+    },
+    decorToggles: { 'shrine-lantern': false, 'sakura-lantern': 'false', 'moon-lamp': true, rug: false },
+  }, MONDAY);
+  assert.deepEqual(state.roomToggles, {
+    nook: { windowOpen: false, lightOn: true }, shrine: { lightOn: false },
+    tearoom: { windowOpen: true }, moon: { windowOpen: false, lightOn: false },
+  });
+  assert.deepEqual(state.decorToggles, { 'shrine-lantern': false, 'moon-lamp': true });
+  const restored = normalizeState(JSON.parse(JSON.stringify(state)), MONDAY);
+  assert.deepEqual(restored.roomToggles, state.roomToggles);
+  assert.deepEqual(restored.decorToggles, state.decorToggles);
+  assert.equal(restored.coins, oldSave.coins); assert.equal(restored.bondXp, oldSave.bondXp);
+});
+
 test('errand EXP preview matches the claim when budgets are full or reset', () => {
   const state = fresh();
   startErrand(state, 'stroll', MONDAY);
@@ -387,9 +413,12 @@ test('small chapter payouts retain an exact 5% shop-set bonus across days and re
   assert.equal(state.reading.weeklyCoins, 210);
 });
 
-test('the exclusive 3% set bonus eventually pays whole leaves on small chapters', () => {
+test('the exclusive 8% set bonus exceeds shop sets and carries fractional leaves across reloads', () => {
   let state = fresh();
-  for (const id of SETS.find(set => set.id === 'moon').itemIds) {
+  const moon = SETS.find(set => set.id === 'moon');
+  assert.equal(moon.bonus, 0.08);
+  assert.ok(SETS.filter(set => set.source === 'shop').every(set => set.bonus === 0.05 && set.bonus < moon.bonus));
+  for (const id of moon.itemIds) {
     state.owned.push(id); equipItem(state, id);
   }
   let awarded = 0;
@@ -399,7 +428,39 @@ test('the exclusive 3% set bonus eventually pays whole leaves on small chapters'
       state = normalizeState(JSON.parse(JSON.stringify(state)), MONDAY + day * DAY);
     }
   }
-  assert.equal(awarded, 206); assert.equal(state.reading.bonusRemainder, 0);
+  assert.equal(awarded, 216); assert.equal(state.reading.bonusRemainder, 0);
+});
+
+test('moon set and fullness snapshot 13% adventure rewards through reloads and recalls', () => {
+  let state = fresh();
+  for (const id of SETS.find(set => set.id === 'moon').itemIds) {
+    state.owned.push(id); equipItem(state, id);
+  }
+  assert.equal(startErrand(state, 'bookshop', MONDAY).ok, true);
+  assert.equal(state.errand.reward.bonus, 0.13);
+  assert.equal(state.errand.reward.leaves, 39);
+  equipItem(state, 'room-nook'); state.hunger = 20;
+  state = normalizeState(JSON.parse(JSON.stringify(state)), MONDAY + 3 * HOUR);
+  assert.equal(state.errand.reward.bonus, 0.13);
+  assert.equal(state.errand.reward.leaves, 39);
+  const preview = getErrandPreview(state, MONDAY + 3 * HOUR);
+  assert.equal(preview.percent, 75); assert.equal(preview.leaves, 29);
+  assert.equal(recallErrand(state, MONDAY + 3 * HOUR).leaves, preview.leaves);
+});
+
+test('errand snapshot repairs cap oversized rewards without retroactively upgrading older trips', () => {
+  const state = fresh();
+  startErrand(state, 'bookshop', MONDAY);
+  state.errand.reward = { leaves: 1000, xp: 1000, bonus: 1, setId: 'moon' };
+  const repaired = normalizeState(state, MONDAY + HOUR);
+  assert.equal(repaired.errand.reward.leaves, 39);
+  assert.equal(repaired.errand.reward.bonus, 0.13);
+  assert.equal(repaired.errand.reward.xp, 15);
+  state.errand.reward = { leaves: 37, xp: 15, bonus: 0.08, setId: 'moon' };
+  const earlierTrip = normalizeState(state, MONDAY + HOUR);
+  assert.equal(earlierTrip.errand.reward.leaves, 37);
+  assert.equal(earlierTrip.errand.reward.bonus, 0.08);
+  assert.equal(recallErrand(earlierTrip, MONDAY + 4 * HOUR).leaves, 37);
 });
 
 test('duplicates and capped requests cannot farm or bank fractional set bonuses', () => {

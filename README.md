@@ -147,11 +147,13 @@ Each complete room set has **one background and three furniture pieces**. Outfit
 | Shrine sanctuary | `room-shrine`, `shrine-mat`, `shrine-lantern`, `shrine-offering` | +5% reading and adventure leaves. |
 | Tea for two | `room-tearoom`, `tea-mat`, `tea-table`, `tea-bonsai` | +5% reading and adventure leaves. |
 | Under the blossoms | `room-sakura`, `sakura-mat`, `sakura-lantern`, `sakura-bench` | +5% reading and adventure leaves. |
-| A moonlit story | `room-moon`, `moon-mat`, `moon-lamp`, `moon-books` | +3% reading and adventure leaves; pass exclusive. |
+| A moonlit story | `room-moon`, `moon-mat`, `moon-lamp`, `moon-books` | +8% reading and adventure leaves; pass exclusive. |
 
 Only one matching set can be active, because its background and three canonical furniture slots must all match. Owning the pieces alone does not activate the bonus. The default nook and legacy furniture do not form a bonus set.
 
-Reading bonuses retain fractional leaves across qualifying awards and reloads. Two 10-leaf chapter awards with a 5% set produce 21 leaves together when the allowance permits. Twenty 10-leaf awards spread across uncapped days produce 210 leaves for a shop set, or 206 for the 3% moon set. Fractions accrue only from base leaves that fit the remaining allowance. Duplicate chapters and fully capped requests accrue nothing; whole bonus leaves that cannot fit the cap are discarded.
+Reading bonuses retain fractional leaves across qualifying awards and reloads. Two 10-leaf chapter awards with a 5% set produce 21 leaves together when the allowance permits. Twenty 10-leaf awards spread across uncapped days produce 210 leaves for a shop set, or 216 for the 8% moon set. Fractions accrue only from base leaves that fit the remaining allowance. Duplicate chapters and fully capped requests accrue nothing; whole bonus leaves that cannot fit the cap are discarded.
+
+Room details are interactive: click curtains or shoji to close/open them, and lamps or lanterns to switch their light. Equipped furniture gives a small wiggle when touched. Room switches (`roomToggles`) and the three collectible lamp switches (`decorToggles`) persist through the same serialized save transactions as other interactions. Tinkering does not award currency or EXP, and wiggles respect reduced-motion preferences. The illustrated outdoor scenes remain fixed evenings rather than following the reader's clock.
 
 Canonical slots are `room`, `outfit`, `accessory`, `rug`, `left`, and `right`. Equipping new furniture replaces the visible item in that slot; both items remain owned. Decorations and accessories can be put away. A room and outfit always remain selected. The bookmark uses the right furniture slot.
 
