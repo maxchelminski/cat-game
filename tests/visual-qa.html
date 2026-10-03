@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Companion appearance gallery</title>
+  <style>
+    :root{color-scheme:dark;font:14px/1.5 system-ui,sans-serif;background:#171711;color:#ece7d8}
+    *{box-sizing:border-box}body{margin:0;padding:28px;max-width:1320px;margin-inline:auto}h1,h2,p{margin:0}h1{font-size:27px;letter-spacing:-.03em}h2{font-size:19px;letter-spacing:-.02em}header>p{margin-top:9px;max-width:830px;color:#b7b49f}a{color:#d0d99c}label{display:grid;gap:6px;color:#d4d0ba;font-size:12px;font-weight:600}select{min-height:42px;padding:9px 34px 9px 12px;border:1px solid #51533c;background:#27291d;color:#ece7d8;border-radius:7px;font:inherit}select:focus-visible{outline:2px solid #c8d590;outline-offset:3px}.controls{display:flex;align-items:end;gap:16px;flex-wrap:wrap;margin:24px 0 14px}.controls label{min-width:195px}.status{min-height:25px;font-size:12px;color:#c0ce92}.status.error{color:#f4a89c}.notes{color:#aaa88f;font-size:12px}.group{margin-top:32px}.group-title{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:13px}.group-title small{color:#989983;font-size:11px}.samples,.dock-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.sample{margin:0;background:#26271d;border:1px solid #464935;border-radius:10px;overflow:hidden;min-width:0}.canvas-stage{height:240px;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 70%,#3d412a55,transparent 70%),#24251b}.canvas-stage canvas{display:block;width:192px;height:216px;image-rendering:pixelated;image-rendering:crisp-edges;max-width:none}.sample figcaption{border-top:1px solid #404331;padding:12px;text-align:center;font-size:12px;color:#dddcc7}.sample figcaption small{display:block;color:#969b7d;font-size:10px;margin-top:4px;overflow-wrap:anywhere}.dock-section{border-top:1px solid #424532;margin-top:38px;padding-top:28px}.dock-section>p{margin:8px 0 17px;color:#aaa88f;font-size:12px}.dock-grid .canvas-stage{height:240px}.dock-grid figcaption{min-height:78px}.dock-grid figcaption strong{display:block;font-size:12px;font-weight:600}.dock-grid figcaption small{line-height:1.5}.footer-note{margin-top:27px;padding:15px 18px;border:1px solid #424532;background:#212319;border-radius:9px;color:#aeb497;font-size:12px}[hidden]{display:none!important}
+    @media(max-width:1100px){body{padding:20px}.samples,.dock-grid{grid-template-columns:repeat(3,minmax(210px,1fr))}}
+    @media(max-width:750px){.samples,.dock-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.canvas-stage,.dock-grid .canvas-stage{height:232px}.group-title{align-items:start;flex-direction:column;gap:4px}}
+    @media(max-width:450px){body{padding:16px}.samples,.dock-grid{grid-template-columns:1fr}.controls{gap:12px}.controls label{width:100%}h1{font-size:23px}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Companion appearance gallery</h1>
+    <p>Every outfit and accessory, painted into the same 64 × 72 sprite canvas. Static samples are shown at 3× scale. This gallery imports only the renderer and sprite controller; it does not read or write companion progress.</p>
+  </header>
+  <div class="controls">
+    <label for="outfit-filter">Outfit
+      <select id="outfit-filter"><option value="all">All six outfits</option></select>
+    </label>
+    <label for="pose-select">Static pose
+      <select id="pose-select">
+        <option value="neutral">Neutral</option>
+        <option value="headpat">Headpat · lowered hand</option>
+        <option value="sleepy">Sleepy · shifted head</option>
+        <option value="reading">Reading · held book</option>
+        <option value="eating">Eating · held snack</option>
+      </select>
+    </label>
+    <label for="dock-accessory">Animated dock accessory
+      <select id="dock-accessory">
+        <option value="">None</option>
+        <option value="glasses" selected>Round glasses</option>
+        <option value="headband">Sakura headband</option>
+        <option value="mask">Festival mask</option>
+        <option value="ribbon">Companion ribbon</option>
+      </select>
+    </label>
+  </div>
+  <p id="status" class="status" role="status">Loading original sprite frames…</p>
+  <p class="notes">Check eye alignment, moving head ornaments, the hand in front of the flower, clothing boundaries, and props held by the paws.</p>
+  <main id="gallery" aria-label="Outfit and accessory combinations"></main>
+  <section class="dock-section" aria-labelledby="dock-title">
+    <h2 id="dock-title">Five slow dock loops</h2>
+    <p>The loops run independently. They use the filtered outfit, or the original cardigan when all outfits are visible. The pose selector affects only the static samples.</p>
+    <div id="dock-gallery" class="dock-grid"></div>
+  </section>
+  <p class="footer-note">Animation respects your system’s reduced-motion preference and pauses while the page is hidden. No game store, localStorage, chapter rewards, or host integration are loaded by this page.</p>
+  <script type="module">
+    import {OUTFIT_IDS,preloadSprites,renderAppearance} from '../src/appearance.js';
+    import {IDLE_VARIANTS,SpriteController} from '../src/sprite-controller.js';
+
+    const outfits={
+      'outfit-base':'Original cardigan',
+      'outfit-miko':'Shrine maiden',
+      'outfit-school':'Sailor school uniform',
+      'outfit-yukata':'Blossom yukata',
+      'outfit-garden':'Garden cardigan',
+      'outfit-moon':'Moonlit cape',
+    };
+    const accessories=[
+      {id:null,name:'No accessory'},
+      {id:'glasses',name:'Round glasses'},
+      {id:'headband',name:'Sakura headband'},
+      {id:'mask',name:'Festival mask'},
+      {id:'ribbon',name:'Companion ribbon'},
+    ];
+    const poses={
+      neutral:{frame:'kemo-neutral.png'},
+      headpat:{frame:'kemo-flustered-4.png'},
+      sleepy:{frame:'kemo-sleepy-5.png'},
+      reading:{frame:'kemo-neutral.png',prop:'book'},
+      eating:{frame:'kemo-cheerful-2.png',prop:'snack'},
+    };
+    const filter=document.querySelector('#outfit-filter');
+    const pose=document.querySelector('#pose-select');
+    const dockAccessory=document.querySelector('#dock-accessory');
+    const status=document.querySelector('#status');
+    const gallery=document.querySelector('#gallery');
+    const dockGallery=document.querySelector('#dock-gallery');
+    const samples=[],controllers=[];
+    let generation=0;
+
+    for(const outfit of OUTFIT_IDS){
+      filter.add(new Option(outfits[outfit],outfit));
+      const section=document.createElement('section');section.className='group';section.dataset.outfit=outfit;
+      const heading=document.createElement('div');heading.className='group-title';
+      const title=document.createElement('h2');title.textContent=outfits[outfit];
+      const detail=document.createElement('small');detail.textContent=outfit;
+      heading.append(title,detail);section.append(heading);
+      const row=document.createElement('div');row.className='samples';
+      for(const accessory of accessories){
+        const figure=document.createElement('figure');figure.className='sample';
+        const stage=document.createElement('div');stage.className='canvas-stage';
+        const canvas=document.createElement('canvas');canvas.width=64;canvas.height=72;canvas.setAttribute('role','img');
+        const caption=document.createElement('figcaption');caption.textContent=accessory.name;
+        const frame=document.createElement('small');caption.append(frame);
+        stage.append(canvas);figure.append(stage,caption);row.append(figure);
+        samples.push({canvas,outfit,accessory:accessory.id,accessoryName:accessory.name,frame});
+      }
+      section.append(row);gallery.append(section);
+    }
+
+    for(const variant of IDLE_VARIANTS){
+      const figure=document.createElement('figure');figure.className='sample';
+      const stage=document.createElement('div');stage.className='canvas-stage';
+      const canvas=document.createElement('canvas');canvas.width=64;canvas.height=72;canvas.dataset.sprite='';
+      stage.append(canvas);
+      const caption=document.createElement('figcaption');
+      const title=document.createElement('strong');title.textContent=`${variant.id+1}. ${variant.name}`;
+      const text=document.createElement('small');text.textContent=variant.description;
+      caption.append(title,text);figure.append(stage,caption);dockGallery.append(figure);
+      controllers.push(new SpriteController(stage,{dock:true,variant:variant.id,accessory:'glasses'}));
+    }
+
+    async function render(){
+      const current=++generation;
+      const selected=filter.value,config=poses[pose.value];
+      status.classList.remove('error');status.textContent='Painting samples…';
+      for(const section of gallery.children)section.hidden=selected!=='all'&&section.dataset.outfit!==selected;
+      controllers.forEach(controller=>controller.updateAppearance({outfit:selected==='all'?'outfit-base':selected,accessory:dockAccessory.value||null}));
+      try{
+        const visible=samples.filter(sample=>selected==='all'||sample.outfit===selected);
+        await Promise.all(visible.map(async sample=>{
+          sample.frame.textContent=config.frame;
+          sample.canvas.setAttribute('aria-label',`${outfits[sample.outfit]}, ${sample.accessoryName.toLowerCase()}, ${pose.options[pose.selectedIndex].text}`);
+          await renderAppearance(sample.canvas,config.frame,{outfit:sample.outfit,accessory:sample.accessory,prop:config.prop});
+        }));
+        if(current===generation)status.textContent=`${visible.length} static combinations painted · 5 animated dock variants · ${config.frame}`;
+      }catch(error){if(current===generation){status.classList.add('error');status.textContent=`Render failed: ${error.message}`;}}
+    }
+    filter.addEventListener('change',render);pose.addEventListener('change',render);dockAccessory.addEventListener('change',render);
+    window.addEventListener('pagehide',()=>controllers.forEach(controller=>controller.destroy()),{once:true});
+    try{await preloadSprites();await render();}catch(error){status.classList.add('error');status.textContent=`Sprite loading failed: ${error.message}`;}
+  </script>
+</body>
+</html>

@@ -18,12 +18,13 @@
   <main id="companion">
     <schale-companion expanded></schale-companion>
     <section class="demo-tools" aria-label="Integration preview">
-      <span>READER PREVIEW</span><p>Try the chapter-completion reward.</p><button id="chapter-demo">Finish a demo chapter <span>+10 coins</span></button>
+      <span>READER PREVIEW</span><p>Try a chapter reward or a new dock animation.</p><button id="chapter-demo">Finish a demo chapter <span>+10 leaves</span></button><button id="next-demo">Next chapter</button>
     </section>
   </main>
   <footer class="site-footer"><span>Made for the moments between chapters.</span><span>Schale Scans <span class="footer-dot">·</span> A little company, at your pace.</span></footer>
   <script type="module">
     let chapter = 0;
+    document.querySelector('#next-demo').addEventListener('click',()=>history.pushState({},'',`?chapter=${++chapter}`));
     document.querySelector('#chapter-demo').addEventListener('click', async () => {
       await customElements.whenDefined('schale-companion');
       const result = await window.rewardPetCoins(10, { chapterId: `demo-${Date.now()}-${++chapter}`, reason: 'Demo chapter finished' });

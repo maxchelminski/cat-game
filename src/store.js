@@ -1,15 +1,16 @@
 import {STORAGE_KEY,createState,normalizeState,advanceState,rewardCoins} from './engine.js';
+const storageKey=document.querySelector?.('meta[name="schale-companion-storage"]')?.content || STORAGE_KEY;
 
 let snapshot=createState(), storageAvailable=true, started=false, unsaved=false;
 const listeners=new Set();
 let localQueue=Promise.resolve();
 function read(){
   if(unsaved)return snapshot;
-  try {const raw=localStorage.getItem(STORAGE_KEY);return raw?normalizeState(JSON.parse(raw)):snapshot;}
+  try {const raw=localStorage.getItem(storageKey);return raw?normalizeState(JSON.parse(raw)):snapshot;}
   catch {storageAvailable=false;return snapshot;}
 }
 function save(){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(snapshot));storageAvailable=true;unsaved=false;}
+  try{localStorage.setItem(storageKey,JSON.stringify(snapshot));storageAvailable=true;unsaved=false;}
   catch{storageAvailable=false;unsaved=true;}
 }
 function notify(detail){for(const listener of listeners)listener(snapshot,detail);}
@@ -24,7 +25,7 @@ export function transact(fn,label='change'){
     save();notify({label,result,catchup});
     return result;
   };
-  const queued=()=>navigator.locks?.request?navigator.locks.request(STORAGE_KEY,run):run();
+  const queued=()=>navigator.locks?.request?navigator.locks.request(storageKey,run):run();
   const operation=localQueue.then(queued,queued);
   localQueue=operation.catch(()=>{});
   return operation;
@@ -38,7 +39,7 @@ export async function startSession(){
   await transact(null,'session');
 }
 window.addEventListener('storage',event=>{
-  if(event.key===STORAGE_KEY){snapshot=read();notify({label:'sync'});}
+  if(event.key===storageKey){snapshot=read();notify({label:'sync'});}
 });
 document.addEventListener('visibilitychange',()=>{
   if(!started)return;
@@ -51,3 +52,4 @@ export async function rewardPetCoins(amount,reason='Chapter finished'){
   return transact((state,now)=>rewardCoins(state,amount,reason,now),'reading');
 }
 window.rewardPetCoins=rewardPetCoins;
+window.rewardPetLeaves=rewardPetCoins;
